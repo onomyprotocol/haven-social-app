@@ -12,6 +12,23 @@ import Container from './components/container';
 import Header from './components/header';
 const Counter = React.lazy(() => import('./components/counter'));
 
+const worker = new Worker('worker.bundle.js');
+worker.onmessage = function onMessage(e) {
+  console.log(e.data);
+};
+
+console.log("does this work")
+var animals = [
+    { animal: 'Horse', name: 'Henry', age: 43 },
+    { animal: 'Dog', name: 'Fred', age: 13 },
+    { animal: 'Cat', name: 'Frodo', age: 18 }
+];
+
+console.table(animals);
+worker.postMessage({
+  hello: 111,
+});
+
 // Global Style
 const GlobalStyle = createGlobalStyle`
   @font-face {

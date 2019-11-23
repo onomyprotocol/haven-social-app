@@ -4,6 +4,7 @@
   "description": "Haven Social App",
   "scripts": {
     "start": "webpack-dev-server --hot --open --mode development",
+    "teststart": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
     "now-build": "npm run build",
     "test": "xo && stylelint './src/**/*.js'"
@@ -53,12 +54,14 @@
   },
   "dependencies": {
     "@hot-loader/react-dom": "^16.10.2",
+    "@ironcorelabs/recrypt-wasm-binding": "^0.5.5",
     "core-js": "^3.3.4",
     "modern-normalize": "^0.5.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-hot-loader": "^4.12.15",
-    "styled-components": "^5.0.0-regexrehydrate"
+    "styled-components": "^5.0.0-regexrehydrate",
+    "text-encoding-shim": "^1.0.4"
   },
   "xo": {
     "nodeVersion": ">=10",

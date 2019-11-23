@@ -13,6 +13,7 @@ browserConfig = (env, argv) => {
 	const {mode} = argv;
 
 	return {
+		devtool: 'source-map',
 		entry: ['react-hot-loader/patch', './src/index.js'],
 		output: {
 			filename: '[name].[hash].js',
@@ -223,4 +224,19 @@ browserConfig = (env, argv) => {
 	};
 };
 
-module.exports = [browserConfig]
+workerConfig = (env, argv) => {
+	// const {mode} = argv;
+	
+	return {
+		devtool: 'source-map',
+		entry: "./src/worker.js",
+		target: 'webworker',
+		output: {
+			path: path.resolve(__dirname, "dist"),
+			filename: "worker.bundle.js"
+		},
+		// mode: "development",
+	}
+}
+
+module.exports = [browserConfig, workerConfig]
