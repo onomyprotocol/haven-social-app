@@ -12,22 +12,8 @@ import Container from './components/container';
 import Header from './components/header';
 const Counter = React.lazy(() => import('./components/counter'));
 
-const worker = new Worker('worker.bundle.js');
-worker.onmessage = function onMessage(e) {
-  console.log(e.data);
-};
-
-console.log("does this work")
-var animals = [
-    { animal: 'Horse', name: 'Henry', age: 43 },
-    { animal: 'Dog', name: 'Fred', age: 13 },
-    { animal: 'Cat', name: 'Frodo', age: 18 }
-];
-
-console.table(animals);
-worker.postMessage({
-  hello: 111,
-});
+import { PrimitivesWorkerProvider } from './context/PrimitivesWorkerContext'
+import WorkerTest from './components/workertest';
 
 // Global Style
 const GlobalStyle = createGlobalStyle`
@@ -67,14 +53,18 @@ const App = () => {
 	}
 
 	return (
-		<Container>
-			<Header>Hello World ⚡</Header>
-			<p>Example site using Styled React Boilerplate!</p>
-			<Suspense fallback={<div>Loading...</div>}>
-				<Counter/>
-			</Suspense>
-			<GlobalStyle/>
-		</Container>
+    <PrimitivesWorkerProvider>
+      <Container>
+        <WorkerTest></WorkerTest>
+        <Header>Hello World ⚡</Header>
+        <p>Example site using Styled React Boilerplate!</p>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Counter/>
+        </Suspense>
+        <GlobalStyle/>
+      </Container>
+    </PrimitivesWorkerProvider>
+		
 	);
 };
 
