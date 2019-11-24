@@ -1,36 +1,132 @@
 const { TextEncoder, TextDecoder } = require('text-encoding-shim')
+const { bufferToHex, hexToBuffer } = require('./hex-buffer')
 const textEncoder = new TextEncoder()
 const textDecoder = new TextDecoder()
-// const Recrypt = () => import('@ironcorelabs/recrypt-wasm-binding')
 
 function postDecrypted(message) {
     self.postMessage(message)
 }
 
-async function recryptTest() {
+function replacer(key, value) {
+    if (value instanceof Uint8Array) {
+      return bufferToHex(value)
+    }
+    if (value instanceof Buffer) {
+      return bufferToHex(new Uint8Array(value))
+    }
+  
+    if (value && value.type === 'Buffer') {
+      return bufferToHex(new Uint16Array(value.data))
+    }
+    return value
+}
+  
+function reviver(key, value) {
+    if (typeof value === 'string') {
+    return hexToBuffer(value)
+    }
+    return value
+}
+
+function stringify(value, space) {
+    const res = JSON.stringify(value, replacer, space)
+    return res
+}
+
+function parse(text) {
+    const res = JSON.parse(text, reviver)
+    return res
+}
+
+async function primitivesWorker() {
     const Recrypt = await import('@ironcorelabs/recrypt-wasm-binding')
     console.log('[WORKER]', Recrypt)
-    const Api256 = new Recrypt.Api256();
-    //Generate both a user key pair and a signing key pair
-    const keys = await Api256.generateKeyPair();
-    console.log('[WORKER]', keys)
-    const signingKeys = Api256.generateEd25519KeyPair();
-    console.log('[WORKER]', signingKeys)
+    const RecryptApi = new Recrypt.Api256();
+ 
+    function serialize(obj) {
+        return stringify(obj)
+    }
 
-    //Generate a plaintext to encrypt
-    const plaintext = "some plaintext";
-    let padded = plaintext;
-    while (padded.length < 384) padded += ' ';
-    console.log('[WORKER]', plaintext)
-    const uint8plaintext = textEncoder.encode(padded)
-    //Encrypt the data to the public key and then attempt to decrypt with the private key
-    const encryptedValue = Api256.encrypt(uint8plaintext, keys.publicKey, signingKeys.privateKey);
-    // console.log('[WORKER]', encryptedValue)
+    async function cryptKeyGen() {
+        const encryptionKeys = RecryptApi.generateKeyPair()
+        const pubX = bufferToHex(encryptionKeys.publicKey.x)
+        const pubY = bufferToHex(encryptionKeys.publicKey.y)
+        return {
+            privKey: bufferToHex(encryptionKeys.privateKey),
+            pubKey: `${pubX}.${pubY}`
+        }
+    }
 
+    async function cryptTransformKeyGen(fromKeyPair, toPubKey, signKeyPair) {
+        const [pubX, pubY] = toPubKey.split('.')
+  
+        
+        const res = RecryptApi.generateTransformKey(
+            hexToBuffer(fromKeyPair.privKey),
+            {
+                x: hexToBuffer(pubX),
+                y: hexToBuffer(pubY)
+            },
+            hexToBuffer(signKeyPair.privKey)
+        )
 
-    const result = Api256.decrypt(encryptedValue, keys.privateKey);
-    const decryptedText = textDecoder.decode(result instanceof Buffer ? new Uint8Array(result) : result).trim()
-    postDecrypted(decryptedText)
+        return stringify(res)
+        
+    }
+
+    async function signKeyGen() {
+        const signingKeys = RecryptApi.generateEd25519KeyPair()
+
+        return {
+            privKey: bufferToHex(signingKeys.privateKey),
+            pubKey: bufferToHex(signingKeys.publicKey)
+        }
+    }
+
+    async function encrypt(pubKey, plaintext, signKeyPair) {
+        const [pubX, pubY] = pubKey.split('.')
+        let padded = plaintext
+        
+        while (padded.length < 384) padded += ' '
+
+        const res = RecryptApi.encrypt(
+            textEncoder.encode(padded),
+            {
+                x: hexToBuffer(pubX),
+                y: hexToBuffer(pubY)
+            },
+            hexToBuffer(signKeyPair.privKey)
+        )
+
+        return stringify(res)
+    }
+
+    async function decrypt(keyPair, ciphertext) {
+        const result = RecryptApi.decrypt(parse(ciphertext), hexToBuffer(keyPair.privKey))
+        return textDecoder.decode(result instanceof Buffer ? new Uint8Array(result) : result).trim()
+    }
+
+    async function cryptTransform(transformKey, ciphertext, signKeyPair) {
+        return stringify(
+            RecryptApi.transform(
+                parse(ciphertext),
+                parse(transformKey),
+                hexToBuffer(signKeyPair.privKey)
+            )
+        )
+    }
+
+    async function sign(keyPair, text) {
+        return bufferToHex(RecryptApi.ed25519Sign(hexToBuffer(keyPair.privKey), Buffer.from(text)))
+    }
+
+    async function verify(pubKey, signature, text) {
+        return RecryptApi.ed25519Verify(
+            hexToBuffer(pubKey),
+            Buffer.from(text),
+            hexToBuffer(signature)
+        )
+    } 
 }
 
 recryptTest();
