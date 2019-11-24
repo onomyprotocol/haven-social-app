@@ -229,7 +229,7 @@ workerConfig = (env, argv) => {
 	
 	return {
 		devtool: 'source-map',
-		entry: "./src/worker.js",
+		entry: "./src/worker/worker.js",
 		target: 'webworker',
 		output: {
 			path: path.resolve(__dirname, "dist"),
