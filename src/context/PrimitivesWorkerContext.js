@@ -3,10 +3,11 @@ import React from 'react'
 const PrimitivesWorkerContext = React.createContext()
 
 function PrimitivesWorkerProvider({children}) {
-    const worker = new Worker('./worker.bundle.js')
+    
+    const primitivesWorker = new Worker('./worker.bundle.js')
 
     return (
-        <PrimitivesWorkerContext.Provider value={worker}>
+        <PrimitivesWorkerContext.Provider value={primitivesWorker}>
             {children}
         </PrimitivesWorkerContext.Provider>
     )
