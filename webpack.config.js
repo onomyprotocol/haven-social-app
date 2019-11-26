@@ -148,7 +148,7 @@ browserConfig = (env, argv) => {
 					]
 				},
 				{
-					test: /\.(woff2|woff)$/,
+					test: /\.(woff2|woff|ttf)$/,
 					use: [
 						'cache-loader',
 						{

@@ -1,43 +1,19 @@
 import React, {Suspense} from 'react';
-import {createGlobalStyle} from 'styled-components';
 import {hot} from 'react-hot-loader/root';
+import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { ThemeProvider } from 'styled-components'
 
-// Import modern-normalize & fonts
-import 'modern-normalize/modern-normalize.css';
-import woff2 from '../public/fonts/open-sans-v16-latin-regular.woff2';
-import woff from '../public/fonts/open-sans-v16-latin-regular.woff';
-
-// Import Components
-import Container from './components/container';
-import Header from './components/header';
-const Counter = React.lazy(() => import('./components/counter'));
-
+import MainHeader from './components/MainHeader/MainHeader'
+import { GlobalStyle } from './components/UI'
+import { theme } from './utils/colors'
+import LoginPage from './pages/LoginPage'
+import ProfilePage from './pages/ProfilePage'
+import FeedPage from './pages/FeedPage'
+import ChatsPage from './pages/ChatsPage'
 import { PrimitivesWorkerProvider } from './context/PrimitivesWorkerContext'
-import WorkerTest from './components/workertest';
 
-// Global Style
-const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: 'Open Sans';
-    font-style: normal;
-    font-weight: 400;
-    font-display: fallback;
-    src: local('Open Sans Regular'), local('OpenSans-Regular'),
-        url('${woff2}') format('woff2'),
-        url('${woff}') format('woff'); 
-  }
+// import WorkerTest from './components/workertest';
 
-  body {
-    font-family: Open Sans, Segoe UI, Tahoma, sans-serif !important;
-    background: #212121;
-    color: #fff;
-    padding: 1em;
-    line-height: 1.8em;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeSpeed;
-    word-wrap: break-word
-  }
-`;
 
 // Main page
 const App = () => {
@@ -54,17 +30,17 @@ const App = () => {
 
 	return (
     <PrimitivesWorkerProvider>
-      <Container>
-        <WorkerTest></WorkerTest>
-        <Header>Hello World ⚡</Header>
-        <p>Example site using Styled React Boilerplate!</p>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Counter/>
-        </Suspense>
-        <GlobalStyle/>
-      </Container>
+        <ThemeProvider theme={theme}>
+            <Router>
+              <GlobalStyle />
+              <MainHeader />
+              <Route exact path="/" component={LoginPage} />
+              <Route exact path="/profile" component={ProfilePage} />
+              <Route exact path="/feed" component={FeedPage} />
+              <Route exact path="/chats" component={ChatsPage} />
+            </Router>
+        </ThemeProvider>
     </PrimitivesWorkerProvider>
-		
 	);
 };
 
