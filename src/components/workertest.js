@@ -1,22 +1,20 @@
 import React, {useEffect, useState} from 'react';
+import primitivesWorkerApi from '../natural-rights/primitivesWorkerApi'
 
 // Import primitives worker
 import { usePrimitivesWorker } from '../context/PrimitivesWorkerContext';
 
-// Simple counter using React Hooks
+// Simple worker test
 const WorkerTest = () => {
     const [workerMounted, updateWorkerMounted] = useState(false)
     const worker = usePrimitivesWorker()
+    const primitivesWorker = primitivesWorkerApi(worker)
     
-    function workerTry() {
-        return new Promise((res, err) => {
-            worker.postMessage({
-                type: "signatureKeyPair",
-            })
-            worker.onmessage = function (e) {
-                res(console.log('[MAIN]', e.data))
-            }
-        });
+    async function workerTry() {
+        const signKey = await primitivesWorker.signKeyGen()
+        console.log('[MAIN]', 'signKey', signKey)
+        const cryptKey = await primitivesWorker.cryptKeyGen()
+        console.log('[MAIN]', 'cryptKey', cryptKey)
     }
 
     worker.onmessage = function(message) {

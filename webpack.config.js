@@ -235,7 +235,6 @@ workerConfig = (env, argv) => {
 			path: path.resolve(__dirname, "dist"),
 			filename: "worker.bundle.js"
 		},
-		// mode: "development",
 	}
 }
 
