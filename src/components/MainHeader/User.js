@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-
-import { Avatar } from '../UI'
+//import { avatarImage } from '../../assets/sample-user.png'
+import { Avatar } from 'components/UI'
 
 const UserWrapper = styled.div`
   display: flex;
@@ -14,7 +14,7 @@ export function User() {
   return (
     <UserWrapper>
       <Link to="/profile">
-        <Avatar src={require('assets/sample-user.png')} alt="" size="48" />
+        <Avatar size="48" src="https://picsum.photos/140" alt="" />
       </Link>
     </UserWrapper>
   )

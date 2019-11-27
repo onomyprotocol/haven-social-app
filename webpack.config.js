@@ -18,9 +18,11 @@ browserConfig = (env, argv) => {
 		output: {
 			filename: '[name].[hash].js',
 			chunkFilename: '[name].[chunkhash].chunk.js',
-			path: path.resolve(__dirname, 'dist')
+			path: path.resolve(__dirname, 'dist'),
 		},
 		resolve: {
+			modules: [path.resolve(__dirname, './src'), 'node_modules'],
+  			extensions: ['.js', '.jsx', '.json', '.png'],
 			alias: {
 				'react-dom': '@hot-loader/react-dom'
 			}
@@ -125,8 +127,8 @@ browserConfig = (env, argv) => {
 						{
 							loader: 'url-loader',
 							options: {
-								limit: 8192,
-								fallback: 'file-loader?name="[path][name].[ext]"'
+								limit: 8000,
+								name: 'images/[path][name].[ext]'
 							}
 						},
 						{

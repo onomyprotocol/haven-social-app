@@ -14,16 +14,6 @@ const plugins = [
 		minify: true,
 		pure: true
 	}],
-	[
-		require.resolve('babel-plugin-module-resolver'),
-		{
-		  root: ["./src/"],
-		  alias: {
-			"test": "./test"
-		  }
-		}
-		
-	],
 	['react-hot-loader/babel']
 ];
 

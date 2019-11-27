@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Container, Button } from '../components/UI'
+import { Container, Button } from 'components/UI'
 
 export default function LoginPage() {
   return (

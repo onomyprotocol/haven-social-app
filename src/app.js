@@ -1,6 +1,8 @@
 import React, {Suspense} from 'react';
 import {hot} from 'react-hot-loader/root';
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+// import 'modern-normalize/modern-normalize.css'
+
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 
 import MainHeader from './components/MainHeader/MainHeader'
@@ -34,10 +36,12 @@ const App = () => {
             <Router>
               <GlobalStyle />
               <MainHeader />
-              <Route exact path="/" component={LoginPage} />
-              <Route exact path="/profile" component={ProfilePage} />
-              <Route exact path="/feed" component={FeedPage} />
-              <Route exact path="/chats" component={ChatsPage} />
+                <Switch>
+                    <Route exact path="/" component={LoginPage} />
+                    <Route exact path="/profile" component={ProfilePage} />
+                    <Route exact path="/feed" component={FeedPage} />
+                    <Route exact path="/chats" component={ChatsPage} />
+                </Switch>
             </Router>
         </ThemeProvider>
     </PrimitivesWorkerProvider>
